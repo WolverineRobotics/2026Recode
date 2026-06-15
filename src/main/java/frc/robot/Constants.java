@@ -30,6 +30,18 @@ public class Constants {
         public static final double turnKiSim = 0; 
         public static final double turnKdSim = 0; 
 
+        public static final double driveKp = 0; 
+        public static final double driveKi = 0; 
+        public static final double driveKd = 0; 
+
+        public static final double driveKs = 0; 
+        public static final double driveKv = 0; 
+        public static final double driveKa = 0; 
+
+        public static final double turnKp = 0; 
+        public static final double turnKi = 0; 
+        public static final double turnKd = 0; 
+
         public static final Distance wheelRadius = Inches.of(2); 
         public static final MomentOfInertia steerMOI = KilogramSquareMeters.of(0.03); 
 

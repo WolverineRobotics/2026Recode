@@ -2,6 +2,8 @@ package frc.robot.Subsystems.Drive;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -12,10 +14,12 @@ import org.ironmaple.simulation.motorsims.SimulatedMotorController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants.DriveConstants;
@@ -93,6 +97,10 @@ public class ModuleIOSim implements ModuleIO {
         return moduleSimulation.getDriveWheelFinalSpeed(); 
     }
 
+    public LinearVelocity getModuleSpeedLinear() {
+        return MetersPerSecond.of(getModuleSpeed().in(RadiansPerSecond) * DriveConstants.wheelRadius.in(Meters)); 
+    }
+
     @Override
     public void setDriveVoltage(Voltage targetVoltage) {
         this.driveMotor.requestVoltage(targetVoltage);
@@ -105,6 +113,18 @@ public class ModuleIOSim implements ModuleIO {
 
     public static SwerveModuleSimulation getModuleSim() {
         return moduleSimulation; 
+    }
+
+    @Override
+    public SwerveModulePosition getModulePosition() {
+        return new SwerveModulePosition(
+            Meters.of(moduleSimulation.getDriveWheelFinalPosition().in(Radians) * DriveConstants.wheelRadius.in(Meters)),
+            getModuleAngle()
+        ); 
+    }
+
+    public SwerveModuleState getModuleState() {
+        return new SwerveModuleState(getModuleSpeedLinear(), getModuleAngle()); 
     }
     
 }

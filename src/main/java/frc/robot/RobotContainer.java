@@ -12,7 +12,10 @@ import org.ironmaple.simulation.drivesims.GyroSimulation;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -56,7 +59,7 @@ public class RobotContainer {
       () -> ModuleIOSim.getModuleSim()
       ); 
 
-      swerveSimulation = new SwerveDriveSimulation(simulationConfig, new Pose2d()); 
+      swerveSimulation = new SwerveDriveSimulation(simulationConfig, new Pose2d(0.1, 0.1, new Rotation2d())); 
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveSimulation);
 
       swervePosePublisher = NetworkTableInstance.getDefault().getStructTopic("Bot Pose", Pose2d.struct).publish(); 
@@ -69,13 +72,15 @@ public class RobotContainer {
   private void configureBindings() {
     m_DriveSubsystem.setDefaultCommand(
       m_DriveSubsystem.driveCommand(
-        driveController.getLeftX(), driveController.getLeftY(), driveController.getRightX()
+        () -> driveController.getLeftX(),
+        () -> driveController.getLeftY(),
+        () -> driveController.getRightX()
       )
     );
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return new PathPlannerAuto("Example Auto"); 
   }
 
   public void updateSimulation() {
