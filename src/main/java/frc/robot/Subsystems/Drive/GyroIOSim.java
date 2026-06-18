@@ -6,10 +6,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class GyroIOSim implements GyroIO {
-    private static final GyroSimulation gyroSimulation = new GyroSimulation(3, 0.05); 
+    private final GyroSimulation gyroSimulation; 
 
-    public GyroIOSim() {
-       
+    public GyroIOSim(GyroSimulation gyroSimulation) {
+       this.gyroSimulation = gyroSimulation;
     }
 
 
@@ -22,7 +22,7 @@ public class GyroIOSim implements GyroIO {
         return gyroSimulation.getMeasuredAngularVelocity(); 
     }
 
-    public static GyroSimulation getGyroSim() {
+    public GyroSimulation getGyroSim() {
         return gyroSimulation; 
     }
     

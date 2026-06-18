@@ -18,17 +18,17 @@ public class Constants {
         public static final Translation2d backLeftLocation = new Translation2d(Inches.of(-14), Inches.of(14));  
         public static final Translation2d backRightLocation = new Translation2d(Inches.of(14), Inches.of(14)); 
 
-        public static final double driveKpSim = 0; 
+        public static final double driveKpSim = 0.000295; 
         public static final double driveKiSim = 0; 
-        public static final double driveKdSim = 0; 
+        public static final double driveKdSim = 0.0000025; 
 
         public static final double driveKsSim = 0; 
         public static final double driveKvSim = 0; 
         public static final double driveKaSim = 0; 
 
-        public static final double turnKpSim = 0; 
+        public static final double turnKpSim = 0.01; 
         public static final double turnKiSim = 0; 
-        public static final double turnKdSim = 0; 
+        public static final double turnKdSim = 0.0001; 
 
         public static final double driveKp = 0; 
         public static final double driveKi = 0; 

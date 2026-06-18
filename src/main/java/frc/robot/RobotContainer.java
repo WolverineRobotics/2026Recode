@@ -21,6 +21,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -38,29 +39,23 @@ public class RobotContainer {
   private final StructPublisher<Pose2d> swervePosePublisher; 
 
   public RobotContainer() {
-    m_DriveSubsystem = new DriveSubsystem(
-      new ModuleIO[] {
-        new ModuleIOSim(), 
-        new ModuleIOSim(), 
-        new ModuleIOSim(), 
-        new ModuleIOSim()
-      }, 
-      new GyroIOSim( )
-    ); 
+
 
     driveController = new CommandXboxController(0); 
-    simulationConfig = new DriveTrainSimulationConfig(
-      Pounds.of(81), 
-      Inches.of(15),
-      Inches.of(16), 
-      Inches.of(14),
-      Inches.of(14), 
-      () -> GyroIOSim.getGyroSim(),
-      () -> ModuleIOSim.getModuleSim()
-      ); 
+    simulationConfig = DriveTrainSimulationConfig.Default(); 
 
       swerveSimulation = new SwerveDriveSimulation(simulationConfig, new Pose2d(0.1, 0.1, new Rotation2d())); 
       SimulatedArena.getInstance().addDriveTrainSimulation(swerveSimulation);
+    m_DriveSubsystem = new DriveSubsystem(
+      new ModuleIO[] {
+        new ModuleIOSim(swerveSimulation.getModules()[0]), 
+        new ModuleIOSim(swerveSimulation.getModules()[1]), 
+        new ModuleIOSim(swerveSimulation.getModules()[2]), 
+        new ModuleIOSim(swerveSimulation.getModules()[3])
+      }, 
+      new GyroIOSim(swerveSimulation.getGyroSimulation()), 
+      swerveSimulation::setSimulationWorldPose
+    ); 
 
       swervePosePublisher = NetworkTableInstance.getDefault().getStructTopic("Bot Pose", Pose2d.struct).publish(); 
 
@@ -77,6 +72,8 @@ public class RobotContainer {
         () -> driveController.getRightX()
       )
     );
+
+    m_DriveSubsystem.resetPose(swerveSimulation.getSimulatedDriveTrainPose());
   }
 
   public Command getAutonomousCommand() {
@@ -85,7 +82,8 @@ public class RobotContainer {
 
   public void updateSimulation() {
     SimulatedArena.getInstance().simulationPeriodic();
-    swerveSimulation.setRobotSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(driveController.getLeftX(), driveController.getLeftY(), driveController.getRightX(), m_DriveSubsystem.getAngle()));
+    // swerveSimulation.setRobotSpeeds(m_DriveSubsystem.getRobotRelativeSpeeds());
     swervePosePublisher.set(swerveSimulation.getSimulatedDriveTrainPose());  
+    SmartDashboard.putData("Commands",CommandScheduler.getInstance());
   }
 }

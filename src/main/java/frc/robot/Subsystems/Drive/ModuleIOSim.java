@@ -29,31 +29,18 @@ public class ModuleIOSim implements ModuleIO {
 
     private final SimulatedMotorController.GenericMotorController driveMotor; 
     private final SimulatedMotorController.GenericMotorController turnMotor; 
-
-    private static final SwerveModuleSimulationConfig moduleSimConfig = new SwerveModuleSimulationConfig(
-                DCMotor.getNEO(1), 
-                DCMotor.getNEO(1),
-                DriveConstants.driveGearRatio,
-                DriveConstants.turnGearRatio, 
-                Volts.of(0.1),
-                Volts.of(0.1),
-                DriveConstants.wheelRadius, 
-                DriveConstants.steerMOI,
-                 1.2
-            ); 
-
-    private static final SwerveModuleSimulation moduleSimulation = new SwerveModuleSimulation(moduleSimConfig);
+    private final SwerveModuleSimulation moduleSimulation; 
 
     private final SimpleMotorFeedforward driveFeedForwardController; 
     private final PIDController driveFeedBackController; 
     private final PIDController turnController; 
 
 
-    public ModuleIOSim() {   
+    public ModuleIOSim(SwerveModuleSimulation moduleSimulation) {   
 
         this.driveMotor = moduleSimulation.useGenericMotorControllerForDrive().withCurrentLimit(Amps.of(60)); 
         this.turnMotor = moduleSimulation.useGenericControllerForSteer().withCurrentLimit(Amps.of(20)); 
-
+        this.moduleSimulation = moduleSimulation; 
 
         driveFeedForwardController = new SimpleMotorFeedforward(
             DriveConstants.driveKsSim, DriveConstants.driveKvSim, DriveConstants.driveKaSim 
@@ -111,7 +98,7 @@ public class ModuleIOSim implements ModuleIO {
         this.turnMotor.requestVoltage(targetVoltage);
     }
 
-    public static SwerveModuleSimulation getModuleSim() {
+    public SwerveModuleSimulation getModuleSim() {
         return moduleSimulation; 
     }
 

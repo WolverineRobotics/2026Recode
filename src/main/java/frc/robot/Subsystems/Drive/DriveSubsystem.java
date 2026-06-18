@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+
+import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -31,12 +33,16 @@ public class DriveSubsystem extends SubsystemBase {
     private final SwerveDriveKinematics m_SwerveDriveKinematics; 
     private final SwerveDriveOdometry m_SwerveOdometry; 
 
-    public DriveSubsystem(ModuleIO[] modules, GyroIO gyro) {
+    private final Consumer<Pose2d> resetSimulationPose; 
+
+    public DriveSubsystem(ModuleIO[] modules, GyroIO gyro, Consumer<Pose2d> resetSimulationPose) {
         
         this.frontLeftModule = modules[0]; 
         this.frontRightModule = modules[1]; 
         this.backLeftModule = modules[2]; 
         this.backRightModule = modules[3]; 
+
+        this.resetSimulationPose = resetSimulationPose; 
 
         this.gyro = gyro; 
 
@@ -131,6 +137,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public void resetPose(Pose2d targetPose) {
+        resetSimulationPose.accept(targetPose);
         m_SwerveOdometry.resetPose(targetPose);
     }
 
